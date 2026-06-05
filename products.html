@@ -4,9 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Products | Titan Sport Gear</title>
-  
   <style>
-    /* 统一大气的 B2B 独立站精美样式 */
+    /* 保持你漂亮大气的独立站 UI 样式 */
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f8f9fa; color: #333; line-height: 1.6; }
     header { background-color: #1a1a1a; padding: 20px; text-align: center; }
@@ -55,52 +54,66 @@
   <script>
     document.addEventListener("DOMContentLoaded", function() {
       const container = document.getElementById('products-container');
-      let combinedProducts = [];
+      let allItems = [];
 
-      // 1. 获取主列表（包含软饵、吸汗带的数组文件）
+      // 1. 抓取主数组文件（软饵、吸汗带）
       const fetchMainList = fetch('/data/products.json')
         .then(res => res.ok ? res.json() : [])
         .catch(() => []);
 
-      // 2. 获取独立的橡胶篮球数据（后台单件生成的对象文件）
+      // 2. 抓取独立的橡胶篮球单文件
       const fetchBasketball = fetch('/data/products/rubber-basketball.json')
         .then(res => res.ok ? res.json() : null)
         .catch(() => null);
 
-      // 3. 两个数据都就位后，开始进行智能合并
       Promise.all([fetchMainList, fetchBasketball])
-        .then(([mainListData, basketballData]) => {
-          container.innerHTML = ''; // 清除 Loading 提示
+        .then(([mainList, basketballRaw]) => {
+          container.innerHTML = '';
 
-          // 注入主列表（数组）
-          if (Array.isArray(mainListData)) {
-            combinedProducts = combinedProducts.concat(mainListData);
+          // 导入主数组列表
+          if (Array.isArray(mainList)) {
+            allItems = allItems.concat(mainList);
           }
 
-          // 🧠 核心容错：智能识别并解析篮球独立对象
-          if (basketballData) {
-            // 如果篮球数据里直接包含产品核心字段（如 title 或 sku）
-            if (basketballData.title || basketballData.sku) {
-              combinedProducts.push(basketballData);
-            } 
-            // 如果后台在对象里多嵌套了一层（例如以篮球名字命名的键）
-            else {
-              const keys = Object.keys(basketballData);
-              if (keys.length > 0 && typeof basketballData[keys[0]] === 'object') {
-                combinedProducts.push(basketballData[keys[0]]);
+          // 🧠 终极降维打击：深层递归扫描器
+          if (basketballRaw) {
+            console.log("成功读取到篮球源数据:", basketballRaw);
+            
+            // 这是一个非常聪明的函数，专门用来把被包裹住的真实产品字段无视层级挖出来
+            function extractProductObject(obj) {
+              if (!obj || typeof obj !== 'object') return null;
+              
+              // 如果对象本身就含有产品三大特征，说明它就是本体
+              if (obj.title || obj.sku || obj.image) {
+                return obj;
               }
+              
+              // 否则，挖它的下一层
+              for (let key in obj) {
+                if (typeof obj[key] === 'object') {
+                  let child = extractProductObject(obj[key]);
+                  if (child) return child;
+                }
+              }
+              return null;
+            }
+
+            const cleanBasketball = extractProductObject(basketballRaw);
+            if (cleanBasketball) {
+              allItems.push(cleanBasketball);
+            } else {
+              // 极端兜底：如果实在没解析成功，把这个文件原封不动打出来看它长什么样
+              console.warn("未能自动解析出产品结构，原数据为:", basketballRaw);
             }
           }
 
-          // 4. 安全保底检查
-          if (combinedProducts.length === 0) {
-            container.innerHTML = '<p class="status-text">Our catalog is being updated. New products coming soon!</p >';
+          // 渲染页面
+          if (allItems.length === 0) {
+            container.innerHTML = '<p class="status-text">Our catalog is being updated.</p >';
             return;
           }
 
-          // 5. 循环渲染出大气的商品卡片
-          combinedProducts.forEach(product => {
-            // 图片路径净化：移除多余的 public/ 前缀，同时完好保留网络绝对图片地址
+          allItems.forEach(product => {
             let finalImageUrl = product.image;
             if (finalImageUrl && finalImageUrl.startsWith('public/')) {
               finalImageUrl = finalImageUrl.replace('public/', '/');
@@ -127,7 +140,6 @@
         })
         .catch(err => {
           console.error('Render error:', err);
-          container.innerHTML = '<p class="status-text" style="color: #d32f2f;">Failed to load products. Please try refreshing.</p >';
         });
     });
   </script>
