@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Products | Export Quality</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <!-- 导航栏 -->
+    <header class="bg-white shadow-sm">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+            <a href=" " class="text-2xl font-bold text-red-600">Titan Sport Gear</a >
+            <nav class="space-x-6 font-medium">
+                <a href="index.html" class="text-gray-600 hover:text-red-600">Home</a >
+                <a href="products.html" class="text-red-600">Products</a >
+            </nav>
+        </div>
+    </header>
+
+    <!-- 产品标题区 -->
+    <main class="max-w-6xl mx-auto px-4 py-12">
+        <h1 class="text-4xl font-bold text-gray-900 mb-2">Product Catalog</h1>
+        <p class="text-gray-500 mb-10">Discover our latest professional line-up engineered for global markets.</p >
+
+        <!-- 产品网格容器 -->
+        <div id="product-grid" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- 动态产品卡片将插入到这里 -->
+            <p class="text-gray-500">Loading products...</p >
+        </div>
+    </main>
+
+    <!-- 模拟读取 Decap 后台生成的多文件数据（外贸企业经典方案） -->
+    <script>
+        // 注意：由于纯前端无法直接扫描文件夹，在外贸静态站中，
+        // 建议上线后通过 Netlify 插件自动汇总，或者后台新建产品时直接在 data/products 目录下生成。
+        // 这里提供一个前端模拟读取演示（实际开发中，更推荐你使用 Hugo/Astro 自动编译循环列表，纯 HTML 适合轻量单页展示）
+        
+        // 示例：假设我们在后台建立了一个软饵产品（测试用，实际数据由后台配置生成）
+        const mockProducts = [
+            { title: "Soft Fishing Lure T-Tail 10cm", image: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=500", description: "High-grade PVC soft bait with vivid swimming action, perfect for bass and saltwater fishing." },
+            { title: "Heavy Duty Sports Grip Tape", image: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=500", description: "Anti-slip, sweat-absorbent grip tape for rackets, bats, and fitness equipment." }
+        ];
+
+        const grid = document.getElementById('product-grid');
+        grid.innerHTML = ''; // 清空内容
+
+        mockProducts.forEach(prod => {
+            const card = document.createElement('div');
+            card.className = "bg-white border rounded-xl overflow-hidden shadow-sm hover:shadow-md transition flex flex-col";
+            card.innerHTML = `
+                < img src="${prod.image}" alt="${prod.title}" class="w-full h-48 object-cover bg-gray-100">
+                <div class="p-6 flex-grow flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">${prod.title}</h3>
+                        <p class="text-gray-600 text-sm mb-4">${prod.description}</p >
+                    </div>
+                    <a href="mailto:info@titansportgear.com?subject=Inquiry about ${prod.title}" class="block text-center bg-gray-900 hover:bg-red-600 text-white font-semibold py-2 rounded transition">Inquire Now</a >
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+    </script>
+</body>
+</html>
