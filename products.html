@@ -4,32 +4,48 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Products | Titan Sport Gear</title>
+  
   <style>
+    /* 基础样式重置 */
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f8f9fa; color: #333; line-height: 1.6; }
+
+    /* 顶部导航栏 */
     header { background-color: #1a1a1a; padding: 20px; text-align: center; }
     header a { color: #fff; text-decoration: none; margin: 0 15px; font-weight: 500; font-size: 16px; }
     header a:hover { color: #ff3333; }
+
+    /* 主容器 */
     .products-container-wrapper { max-width: 1200px; margin: 50px auto; padding: 0 20px; }
     .section-title { font-size: 32px; font-weight: 700; text-align: center; margin-bottom: 10px; color: #111; text-transform: uppercase; letter-spacing: 1px; }
     .section-subtitle { text-align: center; color: #666; margin-bottom: 40px; font-size: 16px; }
+
+    /* 响应式网格 */
     .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
+
+    /* 卡片样式 */
     .product-card { background: #ffffff; border: 1px solid #eef2f5; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.03); transition: all 0.3s ease; display: flex; flex-direction: column; }
     .product-card:hover { transform: translateY(-6px); box-shadow: 0 12px 30px rgba(0,0,0,0.1); }
+    
     .product-img-wrapper { width: 100%; height: 280px; overflow: hidden; background-color: #f7f9fa; position: relative; border-bottom: 1px solid #f1f1f1; }
     .product-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
     .product-card:hover .product-img { transform: scale(1.06); }
+
     .product-info { padding: 22px; flex-grow: 1; display: flex; flex-direction: column; }
     .product-title { font-size: 19px; font-weight: 600; color: #1a1a1a; margin-bottom: 14px; line-height: 1.4; height: 53px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    
     .product-meta-box { background-color: #f8f9fa; padding: 12px; border-radius: 6px; margin-bottom: 15px; }
     .product-meta-item { font-size: 13px; color: #555; display: flex; justify-content: space-between; margin-bottom: 8px; border-bottom: 1px dashed #eef2f5; padding-bottom: 4px; }
     .product-meta-item:last-child { margin-bottom: 0; border-bottom: none; padding-bottom: 0; }
     .product-meta-item strong { color: #222; }
     .product-meta-item span { color: #444; font-weight: 500; text-align: right; }
     .product-sku-span { color: #d32f2f !important; font-weight: 600 !important; }
+
     .product-desc { font-size: 14px; color: #626d7a; line-height: 1.5; margin-bottom: 20px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; height: 63px; }
+    
     .inquiry-btn { display: block; text-align: center; background: #d32f2f; color: #fff; padding: 12px 0; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 14px; letter-spacing: 0.5px; transition: background 0.2s; margin-top: auto; border: none; cursor: pointer; text-transform: uppercase; }
     .inquiry-btn:hover { background: #b71c1c; }
+
     .status-text { text-align: center; color: #888; font-size: 16px; grid-column: 1/-1; padding: 60px 0; }
   </style>
 </head>
@@ -46,7 +62,7 @@
     <p class="section-subtitle">High-quality professional sports gear and fishing equipment.</p >
     
     <div id="products-container" class="products-grid">
-      <p class="status-text">Loading latest premium products...</p >
+      <p class="status-text">Loading premium products...</p >
     </div>
   </main>
 
@@ -54,58 +70,84 @@
     document.addEventListener("DOMContentLoaded", function() {
       const container = document.getElementById('products-container');
 
-      // 纯粹、干净地读取唯一的 data/products.json 文件
-      fetch('/data/products.json')
-        .then(response => {
-          if (!response.ok) throw new Error('Network data file error');
-          return response.json();
-        })
-        .then(data => {
-          container.innerHTML = ''; // 清空提示
+      // 1. 由于后台会生成独立的文件，我们把目前已知的三个产品文件全部列在这里
+      // 以后每在后台录入一个新产品，只需要在这个数组里加一个它的名字即可！
+      const productFiles = [
+        'rubber-basketball.json',
+        'titan-t-tail-soft-fishing-lure-10cm.json', // 或者是你在后台生成的软饵文件名
+        'titan-heavy-duty-sports-grip-tape.json'   // 或者是你在后台生成的吸汗带文件名
+      ];
 
-          // 自动兼容数据层级：支持直接是数组，或嵌套在 products 字段里
-          let items = [];
-          if (Array.isArray(data)) {
-            items = data;
-          } else if (data && Array.isArray(data.products)) {
-            items = data.products;
-          }
+      // 2. 动用高科技：全自动批量并发抓取所有独立的产品 JSON 文件
+      const fetchPromises = productFiles.map(file => 
+        fetch(`/data/products/${file}`)
+          .then(res => {
+            if (!res.ok) throw new Error(`File ${file} not found`);
+            return res.json();
+          })
+          .catch(err => {
+            console.warn(err.message);
+            return null; // 抓取失败的跳过，不影响整体页面
+          })
+      );
 
-          if (items.length === 0) {
-            container.innerHTML = '<p class="status-text">Our catalog is being updated. New products coming soon!</p >';
+      // 3. 当所有文件都被收纳上来后，统一开始在前端渲染
+      Promise.all(fetchPromises)
+        .then(results => {
+          container.innerHTML = ''; // 清空加载提示
+
+          // 过滤掉读取失败的空数据
+          const validProducts = results.filter(p => p !== null);
+
+          // 如果什么都没捞到，作为一个保底机制，我们去读那个总的 products.json 兼容老数据
+          if (validProducts.length === 0) {
+            fetch('/data/products.json')
+              .then(res => res.json())
+              .then(oldData => {
+                const list = Array.isArray(oldData) ? oldData : (oldData.product_list || []);
+                if (list.length > 0) {
+                  renderList(list);
+                } else {
+                  container.innerHTML = '<p class="status-text">Our catalog is being updated.</p >';
+                }
+              })
+              .catch(() => {
+                container.innerHTML = '<p class="status-text">Our catalog is being updated.</p >';
+              });
             return;
           }
 
-          // 渲染全部产品
-          items.forEach(product => {
-            let finalImageUrl = product.image;
-            if (finalImageUrl && finalImageUrl.startsWith('public/')) {
-              finalImageUrl = finalImageUrl.replace('public/', '/');
-            }
-
-            const cardHTML = `
-              <div class="product-card">
-                <div class="product-img-wrapper">
-                  < img src="${finalImageUrl || '/images/placeholder.jpg'}" alt="${product.title || 'Sport Gear'}" class="product-img" loading="lazy">
-                </div>
-                <div class="product-info">
-                  <h3 class="product-title" title="${product.title || ''}">${product.title || 'Premium Product'}</h3>
-                  <div class="product-meta-box">
-                    <div class="product-meta-item"><strong>SKU:</strong> <span class="product-sku-span">${product.sku || 'N/A'}</span></div>
-                    <div class="product-meta-item"><strong>Specs:</strong> <span>${product.specifications || 'Standard'}</span></div>
-                  </div>
-                  <p class="product-desc" title="${product.description || ''}">${product.description || 'No detailed specifications available currently.'}</p >
-                  <a href="/contact.html?product=${encodeURIComponent(product.title || '')}" class="inquiry-btn">Inquiry Now</a >
-                </div>
-              </div>
-            `;
-            container.innerHTML += cardHTML;
-          });
-        })
-        .catch(err => {
-          console.error('Fetch error:', err);
-          container.innerHTML = '<p class="status-text" style="color: #d32f2f;">Failed to load products. Please try again later.</p >';
+          // 正常渲染捞出来的独立产品文件
+          renderList(validProducts);
         });
+
+      // 🎨 渲染卡片的公共函数
+      function renderList(list) {
+        list.forEach(product => {
+          let finalImageUrl = product.image;
+          if (finalImageUrl && finalImageUrl.startsWith('public/')) {
+            finalImageUrl = finalImageUrl.replace('public/', '/');
+          }
+
+          const cardHTML = `
+            <div class="product-card">
+              <div class="product-img-wrapper">
+                < img src="${finalImageUrl || '/images/placeholder.jpg'}" alt="${product.title || 'Sport Gear'}" class="product-img" loading="lazy">
+              </div>
+              <div class="product-info">
+                <h3 class="product-title" title="${product.title || ''}">${product.title || 'Premium Product'}</h3>
+                <div class="product-meta-box">
+                  <div class="product-meta-item"><strong>SKU:</strong> <span class="product-sku-span">${product.sku || 'N/A'}</span></div>
+                  <div class="product-meta-item"><strong>Specs:</strong> <span>${product.specifications || 'Standard'}</span></div>
+                </div>
+                <p class="product-desc" title="${product.description || ''}">${product.description || 'No detailed specifications available currently.'}</p >
+                <a href="/contact.html?product=${encodeURIComponent(product.title || '')}" class="inquiry-btn">Inquiry Now</a >
+              </div>
+            </div>
+          `;
+          container.innerHTML += cardHTML;
+        });
+      }
     });
   </script>
 </body>
