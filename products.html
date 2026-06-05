@@ -4,107 +4,92 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Products | Titan Sport Gear</title>
-  
-  <!-- 精美、现代的外贸企业站纯 CSS 样式 -->
   <style>
-    /* 基础重置 */
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f8f9fa; color: #333; line-height: 1.6; }
-
-    /* 顶部导航栏（可根据您原本的布局微调） */
     header { background-color: #1a1a1a; padding: 20px; text-align: center; }
     header a { color: #fff; text-decoration: none; margin: 0 15px; font-weight: 500; font-size: 16px; }
     header a:hover { color: #ff3333; }
-
-    /* 产品板块主容器 */
     .products-container-wrapper { max-width: 1200px; margin: 50px auto; padding: 0 20px; }
     .section-title { font-size: 32px; font-weight: 700; text-align: center; margin-bottom: 10px; color: #111; text-transform: uppercase; letter-spacing: 1px; }
     .section-subtitle { text-align: center; color: #666; margin-bottom: 40px; font-size: 16px; }
-
-    /* 响应式网格系统：自动根据屏幕宽度排列卡片 */
     .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
-
-    /* 产品卡片精致样式 */
     .product-card { background: #ffffff; border: 1px solid #eef2f5; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.03); transition: all 0.3s ease; display: flex; flex-direction: column; }
     .product-card:hover { transform: translateY(-6px); box-shadow: 0 12px 30px rgba(0,0,0,0.1); }
-    
-    /* 图片容器：固定高度与比例，防止前台变形 */
     .product-img-wrapper { width: 100%; height: 280px; overflow: hidden; background-color: #f7f9fa; position: relative; border-bottom: 1px solid #f1f1f1; }
     .product-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
     .product-card:hover .product-img { transform: scale(1.06); }
-
-    /* 文字及参数区域 */
     .product-info { padding: 22px; flex-grow: 1; display: flex; flex-direction: column; }
     .product-title { font-size: 19px; font-weight: 600; color: #1a1a1a; margin-bottom: 14px; line-height: 1.4; height: 53px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-    
-    /* 参数展示盒 */
     .product-meta-box { background-color: #f8f9fa; padding: 12px; border-radius: 6px; margin-bottom: 15px; }
     .product-meta-item { font-size: 13px; color: #555; display: flex; justify-content: space-between; margin-bottom: 8px; border-bottom: 1px dashed #eef2f5; padding-bottom: 4px; }
     .product-meta-item:last-child { margin-bottom: 0; border-bottom: none; padding-bottom: 0; }
     .product-meta-item strong { color: #222; }
     .product-meta-item span { color: #444; font-weight: 500; text-align: right; }
     .product-sku-span { color: #d32f2f !important; font-weight: 600 !important; }
-
-    /* 描述区域：超出3行自动隐藏并显示省略号 */
     .product-desc { font-size: 14px; color: #626d7a; line-height: 1.5; margin-bottom: 20px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; height: 63px; }
-    
-    /* B2B 询盘行动按钮 */
     .inquiry-btn { display: block; text-align: center; background: #d32f2f; color: #fff; padding: 12px 0; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 14px; letter-spacing: 0.5px; transition: background 0.2s; margin-top: auto; border: none; cursor: pointer; text-transform: uppercase; }
     .inquiry-btn:hover { background: #b71c1c; }
-
-    /* 状态提示文字 */
     .status-text { text-align: center; color: #888; font-size: 16px; grid-column: 1/-1; padding: 60px 0; }
   </style>
 </head>
 <body>
 
-  <!-- 顶部导航栏 -->
   <header>
     <a href=" ">Home</a >
     <a href="products.html" style="color: #ff3333; font-weight: bold;">Products</a >
     <a href="contact.html">Contact Us</a >
   </header>
 
-  <!-- 主体产品展示区 -->
   <main class="products-container-wrapper">
     <h1 class="section-title">Our Product Catalog</h1>
     <p class="section-subtitle">High-quality professional sports gear and fishing equipment.</p >
     
-    <!-- 📦 核心目标容器：JavaScript 会把后台生成的产品动态注入到这里 -->
     <div id="products-container" class="products-grid">
       <p class="status-text">Loading latest premium products...</p >
     </div>
   </main>
 
-  <!-- 🚀 核心自动化脚本：完美对齐您的 products.json 数据结构 -->
   <script>
     document.addEventListener("DOMContentLoaded", function() {
-      // 1. 发起 fetch 请求，读取您在 data/products.json 里的原生数组
-      fetch('/data/products.json')
-        .then(response => {
-          if (!response.ok) throw new Error('Data file not found');
-          return response.json();
-        })
-        .then(productsArray => {
-          const container = document.getElementById('products-container');
-          container.innerHTML = ''; // 成功拿到数据，清空 Loading 提示
+      const container = document.getElementById('products-container');
+      let allProducts = [];
 
-          // 2. 安全检查：如果后台数据文件为空
-          if (!productsArray || productsArray.length === 0) {
+      // 1. 同时发起两个请求：一个去读公共列表，一个去读那个独立的橡胶篮球文件
+      const fetchList = fetch('/data/products.json')
+        .then(res => res.ok ? res.json() : [])
+        .catch(() => []);
+
+      const fetchBasketball = fetch('/data/products/rubber-basketball.json')
+        .then(res => res.ok ? res.json() : null)
+        .catch(() => null);
+
+      // 2. 当两个文件都敲完门后，合体渲染
+      Promise.all([fetchList, fetchBasketball])
+        .then(([listData, basketballData]) => {
+          container.innerHTML = ''; // 清空提示
+
+          // 整合数据
+          if (Array.isArray(listData)) {
+            allProducts = allProducts.concat(listData);
+          }
+          if (basketballData) {
+            allProducts.push(basketballData);
+          }
+
+          // 如果什么都没捞到
+          if (allProducts.length === 0) {
             container.innerHTML = '<p class="status-text">Our catalog is being updated. New products coming soon!</p >';
             return;
           }
 
-          // 3. 循环遍历数组，精准提取您的字段并渲染 HTML
-          productsArray.forEach(product => {
-            
-            // 路径修复逻辑：兼容 Unsplash 绝对网络图片路径和本地相对路径
+          // 开始渲染
+          allProducts.forEach(product => {
             let finalImageUrl = product.image;
             if (finalImageUrl && finalImageUrl.startsWith('public/')) {
               finalImageUrl = finalImageUrl.replace('public/', '/');
             }
 
-            // 构建符合您 JSON 字段的卡片 HTML (sku, specifications, description)
             const cardHTML = `
               <div class="product-card">
                 <div class="product-img-wrapper">
@@ -112,31 +97,23 @@
                 </div>
                 <div class="product-info">
                   <h3 class="product-title" title="${product.title || ''}">${product.title || 'Premium Product'}</h3>
-                  
                   <div class="product-meta-box">
                     <div class="product-meta-item"><strong>SKU:</strong> <span class="product-sku-span">${product.sku || 'N/A'}</span></div>
                     <div class="product-meta-item"><strong>Specs:</strong> <span>${product.specifications || 'Standard'}</span></div>
                   </div>
-                  
                   <p class="product-desc" title="${product.description || ''}">${product.description || 'No detailed specifications available currently.'}</p >
-                  
-                  <!-- 询盘联动：点击后自动把当前产品标题带入到联系页面 URL 中 -->
                   <a href="/contact.html?product=${encodeURIComponent(product.title || '')}" class="inquiry-btn">Inquiry Now</a >
                 </div>
               </div>
             `;
-            
-            // 注入网格容器中
             container.innerHTML += cardHTML;
           });
         })
         .catch(err => {
-          console.error('Error fetching data:', err);
-          document.getElementById('products-container').innerHTML = 
-            '<p class="status-text" style="color: #d32f2f;">Failed to load products. Please try refreshing the page.</p >';
+          console.error(err);
+          container.innerHTML = '<p class="status-text" style="color: #d32f2f;">Failed to load products.</p >';
         });
     });
   </script>
-
 </body>
 </html>
