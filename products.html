@@ -64,3 +64,77 @@
     </script>
 </body>
 </html>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Titan Sport Gear - Products</title>
+  
+  <style>
+    .products-section { padding: 40px 20px; max-width: 1200px; margin: 0 auto; font-family: sans-serif; }
+    .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; margin-top: 20px; }
+    .product-card { border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: transform 0.2s; }
+    .product-card:hover { transform: translateY(-5px); }
+    .product-img { width: 100%; height: 250px; object-fit: cover; background: #f9f9f9; }
+    .product-info { padding: 15px; }
+    .product-title { font-size: 18px; margin: 0 0 10px 0; color: #222; }
+    .product-meta { font-size: 13px; color: #666; margin-bottom: 5px; }
+    .product-desc { font-size: 14px; color: #555; line-height: 1.4; margin-top: 10px; }
+    .inquiry-btn { display: inline-block; width: 100%; text-align: center; background: #d32f2f; color: white; padding: 10px 0; text-decoration: none; border-radius: 4px; margin-top: 15px; font-weight: bold; }
+    .inquiry-btn:hover { background: #b71c1c; }
+  </style>
+</head>
+<body>
+
+  <section class="products-section">
+    <h2>Our Sports & Fishing Products</h2>
+    
+    <div id="products-container" class="products-grid">
+      <p>Loading products...</p >
+    </div>
+  </section>
+
+  <script>
+    // 异步请求后台生成的 JSON 数据
+    fetch('/data/products.json')
+      .then(response => {
+        if (!response.ok) throw new Error('Network response was not ok');
+        return response.json();
+      })
+      .then(data => {
+        const container = document.getElementById('products-container');
+        container.innerHTML = ''; // 清空加载提示
+
+        // 检查是否有产品数据
+        if (!data.product_list || data.product_list.length === 0) {
+          container.innerHTML = '<p>No products found.</p >';
+          return;
+        }
+
+        // 循环遍历后台添加的每一个产品并生成 HTML
+        data.product_list.forEach(product => {
+          const productHTML = `
+            <div class="product-card">
+              < img src="${product.image}" alt="${product.title}" class="product-img">
+              <div class="product-info">
+                <h3 class="product-title">${product.title}</h3>
+                <div class="product-meta"><strong>MOQ:</strong> ${product.moq || 'Negotiable'}</div>
+                <div class="product-meta"><strong>Supply Ability:</strong> ${product.supply_ability || 'On Request'}</div>
+                <p class="product-desc">${product.description || ''}</p >
+                <a href=" " class="inquiry-btn">Inquiry Now</a >
+              </div>
+            </div>
+          `;
+          container.innerHTML += productHTML;
+        });
+      })
+      .catch(err => {
+        console.error('Error fetching products:', err);
+        document.getElementById('products-container').innerHTML = '<p>Failed to load products. Please try again later.</p >';
+      });
+  </script>
+
+</body>
+</html>
