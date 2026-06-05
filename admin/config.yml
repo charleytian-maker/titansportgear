@@ -28,19 +28,21 @@ collections:
           - { label: "联系电话 (Phone)", name: "phone", widget: "string", required: false }
           - { label: "公司地址 (Address)", name: "address", widget: "string", required: false }
 
-  # 2. 📦 产品中心 (Products) - 文件夹模式
+  # 2. 📦 产品中心 (Products) - 适合原生静态网的 JSON 列表模式
   - name: "products"
     label: "📦 产品中心 (Products)"
-    folder: "content/products"
-    create: true
-    slug: "{{slug}}"
+    file: "public/data/products.json" # 后台数据会直接保存在这个 JSON 文件里
     fields:
-      - { label: "产品名称 (Product Name)", name: "title", widget: "string" }
-      - { label: "产品主图 (Main Image)", name: "image", widget: "image" }
-      - { label: "最小起订量 (MOQ)", name: "moq", widget: "string", default: "500 PCS" }
-      - { label: "供货能力 (Supply Ability)", name: "supply_ability", widget: "string", default: "10,000 PCS / Month" }
-      - { label: "简短描述 (Brief Description)", name: "description", widget: "text" }
-      - { label: "详细介绍 (Detailed Content)", name: "body", widget: "markdown" }
+      - label: "产品列表 (Product List)"
+        name: "product_list"
+        widget: "list"
+        summary: "{{fields.title}}"
+        fields:
+          - { label: "产品名称 (Product Name)", name: "title", widget: "string" }
+          - { label: "产品图片 (Product Image)", name: "image", widget: "image" }
+          - { label: "最小起订量 (MOQ)", name: "moq", widget: "string", default: "500 PCS" }
+          - { label: "供货能力 (Supply Ability)", name: "supply_ability", widget: "string", default: "10,000 PCS / Month" }
+          - { label: "产品简短描述 (Description)", name: "description", widget: "text" }
 
   # 3. 📰 博客与新闻 (Blogs & News) - 🆕 文件夹模式
   - name: "blog"
