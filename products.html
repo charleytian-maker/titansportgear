@@ -53,38 +53,31 @@
   <script>
     document.addEventListener("DOMContentLoaded", function() {
       const container = document.getElementById('products-container');
-      let allProducts = [];
 
-      // 1. 同时发起两个请求：一个去读公共列表，一个去读那个独立的橡胶篮球文件
-      const fetchList = fetch('/data/products.json')
-        .then(res => res.ok ? res.json() : [])
-        .catch(() => []);
-
-      const fetchBasketball = fetch('/data/products/rubber-basketball.json')
-        .then(res => res.ok ? res.json() : null)
-        .catch(() => null);
-
-      // 2. 当两个文件都敲完门后，合体渲染
-      Promise.all([fetchList, fetchBasketball])
-        .then(([listData, basketballData]) => {
+      // 纯粹、干净地读取唯一的 data/products.json 文件
+      fetch('/data/products.json')
+        .then(response => {
+          if (!response.ok) throw new Error('Network data file error');
+          return response.json();
+        })
+        .then(data => {
           container.innerHTML = ''; // 清空提示
 
-          // 整合数据
-          if (Array.isArray(listData)) {
-            allProducts = allProducts.concat(listData);
-          }
-          if (basketballData) {
-            allProducts.push(basketballData);
+          // 自动兼容数据层级：支持直接是数组，或嵌套在 products 字段里
+          let items = [];
+          if (Array.isArray(data)) {
+            items = data;
+          } else if (data && Array.isArray(data.products)) {
+            items = data.products;
           }
 
-          // 如果什么都没捞到
-          if (allProducts.length === 0) {
+          if (items.length === 0) {
             container.innerHTML = '<p class="status-text">Our catalog is being updated. New products coming soon!</p >';
             return;
           }
 
-          // 开始渲染
-          allProducts.forEach(product => {
+          // 渲染全部产品
+          items.forEach(product => {
             let finalImageUrl = product.image;
             if (finalImageUrl && finalImageUrl.startsWith('public/')) {
               finalImageUrl = finalImageUrl.replace('public/', '/');
@@ -110,8 +103,8 @@
           });
         })
         .catch(err => {
-          console.error(err);
-          container.innerHTML = '<p class="status-text" style="color: #d32f2f;">Failed to load products.</p >';
+          console.error('Fetch error:', err);
+          container.innerHTML = '<p class="status-text" style="color: #d32f2f;">Failed to load products. Please try again later.</p >';
         });
     });
   </script>
