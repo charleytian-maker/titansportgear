@@ -47,26 +47,89 @@
 
     <!-- 动态读取数据脚本 -->
     <script>
-        fetch('/data/company.json')
-            .then(res => res.json())
-            .then(data => {
-                document.getElementById('nav-brand').innerText = data.company_name;
-                document.getElementById('hero-title').innerText = data.hero_title;
-                document.getElementById('hero-subtitle').innerText = data.hero_subtitle;
-                document.getElementById('about-text').innerText = data.about_text;
-                document.getElementById('contact-email').innerText = data.contact_email;
-                document.getElementById('contact-email').href = "mailto:" + data.contact_email;
-                document.getElementById('footer-text').innerText = `© 2026 ${data.company_name}. All Rights Reserved.`;
-            }).catch(err => console.error("Error loading company data:", err));
-
-        // 配合 Netlify Identity 登录重定向
-        if (window.netlifyIdentity) {
-            window.netlifyIdentity.on("init", user => {
-                if (!user) {
-                    window.netlifyIdentity.on("login", () => { document.location.href = "/admin/"; });
-                }
-            });
+  document.addEventListener("DOMContentLoaded", function() {
+    // 1. 尝试读取整合的 products.json
+    fetch('/data/products.json')
+      .then(response => {
+        if (!response.ok) throw new Error('Main products.json not found');
+        return response.json();
+      })
+      .then(data => {
+        // 判断数据是嵌套在 product_list 里，还是直接就是数组
+        let list = [];
+        if (data && data.product_list) {
+          list = data.product_list;
+        } else if (Array.isArray(data)) {
+          list = data;
+        } else if (typeof data === 'object') {
+          // 如果后台把数据单独存成了对象，则放入数组
+          list = [data];
         }
-    </script>
+        
+        renderProducts(list);
+      })
+      .catch(err => {
+        console.warn('Main json read failed, trying backup path...', err);
+        
+        // 2. 备用兜底路径：如果你的后台将单个产品独立生成了文件，直接去读篮球文件
+        fetch('/data/products/rubber-basketball.json')
+          .then(res => res.json())
+          .then(singleProduct => {
+            if (singleProduct) {
+              renderProducts([singleProduct]);
+            }
+          })
+          .catch(backupErr => {
+            console.error('All fetch paths failed:', backupErr);
+            document.getElementById('products-container').innerHTML = 
+              '<p class="status-text" style="color: #d32f2f;">Failed to load products. Please check if data exists.</p >';
+          });
+      });
+
+    // 🎨 核心渲染函数
+    function renderProducts(productList) {
+      const container = document.getElementById('products-container');
+      container.innerHTML = ''; // 清空加载提示
+
+      if (!productList || productList.length === 0) {
+        container.innerHTML = '<p class="status-text">Our catalog is being updated. New products coming soon!</p >';
+        return;
+      }
+
+      productList.forEach(product => {
+        // 自动修复 Decap CMS 产生的各种图片路径变体 (images/uploads 或 public/images)
+        let finalImageUrl = product.image;
+        if (finalImageUrl) {
+          if (finalImageUrl.startsWith('public/')) {
+            finalImageUrl = finalImageUrl.replace('public/', '/');
+          } else if (!finalImageUrl.startsWith('/')) {
+            finalImageUrl = '/' + finalImageUrl;
+          }
+        }
+
+        const cardHTML = `
+          <div class="product-card">
+            <div class="product-img-wrapper">
+              < img src="${finalImageUrl || '/images/placeholder.jpg'}" alt="${product.title || 'Sport Gear'}" class="product-img" loading="lazy">
+            </div>
+            <div class="product-info">
+              <h3 class="product-title" title="${product.title || ''}">${product.title || 'Premium Product'}</h3>
+              
+              <div class="product-meta-box">
+                <div class="product-meta-item"><strong>MOQ:</strong> <span>${product.moq || '500 PCS'}</span></div>
+                <div class="product-meta-item"><strong>Supply:</strong> <span>${product.supply_ability || '10,000 PCS/Month'}</span></div>
+              </div>
+              
+              <p class="product-desc" title="${product.description || ''}">${product.description || 'High quality equipment for international trade export.'}</p >
+              
+              <a href=" '')}" class="inquiry-btn">Inquiry Now</a >
+            </div>
+          </div>
+        `;
+        container.innerHTML += cardHTML;
+      });
+    }
+  });
+</script>
 </body>
 </html>
