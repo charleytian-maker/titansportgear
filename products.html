@@ -1,137 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Our Products | Export Quality</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Products | Titan Sport Gear</title>
+  
+  <style>
+    /* 基础重置 */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f8f9fa; color: #333; line-height: 1.6; }
+
+    /* 简易导航栏（可根据你自己的网站布局微调） */
+    header { background-color: #1a1a1a; padding: 20px; text-align: center; }
+    header a { color: #fff; text-decoration: none; margin: 0 15px; font-weight: 500; font-size: 16px; }
+    header a:hover { color: #ff3333; }
+
+    /* 产品板块主容器 */
+    .products-container-wrapper { max-width: 1200px; margin: 50px auto; padding: 0 20px; }
+    .section-title { font-size: 32px; font-weight: 700; text-align: center; margin-bottom: 10px; color: #111; text-transform: uppercase; letter-spacing: 1px; }
+    .section-subtitle { text-align: center; color: #666; margin-bottom: 40px; font-size: 16px; }
+
+    /* 响应式产品网格系统：根据屏幕大小自动排列（四列 -> 三列 -> 两列 -> 单列） */
+    .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
+
+    /* 产品卡片精致样式 */
+    .product-card { background: #ffffff; border: 1px solid #eef2f5; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.03); transition: all 0.3s ease; display: flex; flex-direction: column; }
+    .product-card:hover { transform: translateY(-6px); box-shadow: 0 12px 30px rgba(0,0,0,0.1); }
+    
+    /* 图片容器：固定比例，防止前台变形 */
+    .product-img-wrapper { width: 100%; height: 280px; overflow: hidden; background-color: #f7f9fa; position: relative; border-bottom: 1px solid #f1f1f1; }
+    .product-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+    .product-card:hover .product-img { transform: scale(1.06); }
+
+    /* 文字及参数区域 */
+    .product-info { padding: 22px; flex-grow: 1; display: flex; flex-direction: column; }
+    .product-title { font-size: 19px; font-weight: 600; color: #1a1a1a; margin-bottom: 14px; line-height: 1.4; height: 53px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    
+    /* 外贸大买家最关心的核心参数参数 */
+    .product-meta-box { background-color: #f8f9fa; padding: 10px 12px; border-radius: 6px; margin-bottom: 15px; }
+    .product-meta-item { font-size: 13px; color: #555; display: flex; justify-content: space-between; margin-bottom: 6px; }
+    .product-meta-item:last-child { margin-bottom: 0; }
+    .product-meta-item strong { color: #222; }
+    .product-meta-item span { color: #d32f2f; font-weight: 600; }
+
+    .product-desc { font-size: 14px; color: #626d7a; line-height: 1.5; margin-bottom: 20px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; height: 63px; }
+    
+    /* 强烈的 B2B 询盘黄色/红色行动按钮 */
+    .inquiry-btn { display: block; text-align: center; background: #d32f2f; color: #fff; padding: 12px 0; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 14px; letter-spacing: 0.5px; transition: background 0.2s; margin-top: auto; border: none; cursor: pointer; text-transform: uppercase; }
+    .inquiry-btn:hover { background: #b71c1c; }
+
+    /* 加载中与错误提示 */
+    .status-text { text-align: center; color: #888; font-size: 16px; grid-column: 1/-1; padding: 60px 0; }
+  </style>
 </head>
-<body class="bg-gray-50 text-gray-800">
+<body>
 
-    <!-- 导航栏 -->
-    <header class="bg-white shadow-sm">
-        <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
-            <a href=" " class="text-2xl font-bold text-red-600">Titan Sport Gear</a >
-            <nav class="space-x-6 font-medium">
-                <a href="index.html" class="text-gray-600 hover:text-red-600">Home</a >
-                <a href="products.html" class="text-red-600">Products</a >
-            </nav>
-        </div>
-    </header>
+  <header>
+    <a href=" ">Home</a >
+    <a href="products.html" style="color: #ff3333; font-weight: bold;">Products</a >
+    <a href="contact.html">Contact Us</a >
+  </header>
 
-    <!-- 产品标题区 -->
-    <main class="max-w-6xl mx-auto px-4 py-12">
-        <h1 class="text-4xl font-bold text-gray-900 mb-2">Product Catalog</h1>
-        <p class="text-gray-500 mb-10">Discover our latest professional line-up engineered for global markets.</p >
+  <main class="products-container-wrapper">
+    <h1 class="section-title">Our Product Catalog</h1>
+    <p class="section-subtitle">High-quality professional sports gear and fishing equipment.</p >
+    
+    <div id="products-container" class="products-grid">
+      <p class="status-text">Loading latest products...</p >
+    </div>
+  </main>
 
-        <!-- 产品网格容器 -->
-        <div id="product-grid" class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <!-- 动态产品卡片将插入到这里 -->
-            <p class="text-gray-500">Loading products...</p >
-  <div class="products-section">
-  <div id="products-container" class="products-grid">
-    <p class="loading-text">Loading premium sport gear...</p >
-  </div>
-</div>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      // 1. 发起 fetch 请求，读取后台每次发布后自动更新的 products.json 文件
+      fetch('/data/products.json')
+        .then(response => {
+          if (!response.ok) throw new Error('Data file not found');
+          return response.json();
+        })
+        .then(data => {
+          const container = document.getElementById('products-container');
+          container.innerHTML = ''; // 成功拿到数据，清空 Loading 提示
 
-<style>
-  .products-section { padding: 50px 20px; max-width: 1200px; margin: 0 auto; font-family: 'Segoe UI', Arial, sans-serif; }
-  .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
-  .product-card { border: 1px solid #eef2f5; border-radius: 12px; overflow: hidden; background: #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: all 0.3s ease; display: flex; flex-direction: column; }
-  .product-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
-  .product-img-wrapper { width: 100%; height: 260px; overflow: hidden; background: #f7f9fa; position: relative; }
-  .product-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
-  .product-card:hover .product-img { transform: scale(1.05); }
-  .product-info { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
-  .product-title { font-size: 18px; font-weight: 600; color: #1a1a1a; margin: 0 0 12px 0; line-height: 1.4; }
-  .product-meta-item { font-size: 13px; color: #666; margin-bottom: 6px; display: flex; justify-content: space-between; border-bottom: 1px dashed #f0f0f0; padding-bottom: 4px; }
-  .product-meta-item strong { color: #333; }
-  .product-desc { font-size: 14px; color: #626d7a; line-height: 1.5; margin: 12px 0; flex-grow: 1; }
-  .inquiry-btn { display: block; text-align: center; background: #d32f2f; color: #fff; padding: 12px 0; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 14px; letter-spacing: 0.5px; transition: background 0.2s; margin-top: auto; }
-  .inquiry-btn:hover { background: #b71c1c; }
-  .loading-text { text-align: center; color: #888; font-size: 16px; grid-column: 1/-1; padding: 40px 0; }
-</style>
-
-<script>
-  document.addEventListener("DOMContentLoaded", function() {
-    // 异步请求 Netlify 部署的 json 数据路径
-    fetch('/data/products.json')
-      .then(response => {
-        if (!response.ok) throw new Error('Failed to load products file');
-        return response.json();
-      })
-      .then(data => {
-        const container = document.getElementById('products-container');
-        container.innerHTML = ''; // 清空加载提示
-
-        // 安全检查：如果后台还没录入数据，给个友好提示
-        if (!data.product_list || data.product_list.length === 0) {
-          container.innerHTML = '<p class="loading-text">Our catalog is being updated. Check back soon!</p >';
-          return;
-        }
-
-        // 循环将后台录入的产品一个一个追加到页面上
-        data.product_list.forEach(product => {
-          // 对图片路径做个原生兼容：Decap 上传到 public/images 在原生 HTML 里需要转换为能直连的相对路径 /images/
-          let displayImage = product.image;
-          if (displayImage && displayImage.startsWith('public/')) {
-            displayImage = displayImage.replace('public/', '/');
+          // 2. 如果后台列表空空如也，显示产品上架中提示
+          if (!data.product_list || data.product_list.length === 0) {
+            container.innerHTML = '<p class="status-text">Our catalog is being updated. New products coming soon!</p >';
+            return;
           }
 
-          const productHTML = `
-            <div class="product-card">
-              <div class="product-img-wrapper">
-                < img src="${displayImage || '/images/placeholder.jpg'}" alt="${product.title}" class="product-img" loading="lazy">
-              </div>
-              <div class="product-info">
-                <h3 class="product-title">${product.title}</h3>
-                <div class="product-meta-item"><strong>MOQ:</strong> <span>${product.moq || 'Negotiable'}</span></div>
-                <div class="product-meta-item"><strong>Supply Ability:</strong> <span>${product.supply_ability || '10,000+ PCS/Month'}</span></div>
-                <p class="product-desc">${product.description || 'No description available for this gear.'}</p >
-                <a href=" " class="inquiry-btn">GET A QUOTE</a >
-              </div>
-            </div>
-          `;
-          container.innerHTML += productHTML;
-        });
-      })
-      .catch(err => {
-        console.error('Error fetching data:', err);
-        document.getElementById('products-container').innerHTML = '<p class="loading-text" style="color: #d32f2f;">Error loading products. Please try refreshing the page.</p >';
-      });
-  });
-</script>
-
-    <!-- 模拟读取 Decap 后台生成的多文件数据（外贸企业经典方案） -->
-    <script>
-        // 注意：由于纯前端无法直接扫描文件夹，在外贸静态站中，
-        // 建议上线后通过 Netlify 插件自动汇总，或者后台新建产品时直接在 data/products 目录下生成。
-        // 这里提供一个前端模拟读取演示（实际开发中，更推荐你使用 Hugo/Astro 自动编译循环列表，纯 HTML 适合轻量单页展示）
-        
-        // 示例：假设我们在后台建立了一个软饵产品（测试用，实际数据由后台配置生成）
-        const mockProducts = [
-            { title: "Soft Fishing Lure T-Tail 10cm", image: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=500", description: "High-grade PVC soft bait with vivid swimming action, perfect for bass and saltwater fishing." },
-            { title: "Heavy Duty Sports Grip Tape", image: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=500", description: "Anti-slip, sweat-absorbent grip tape for rackets, bats, and fitness equipment." }
-        ];
-
-        const grid = document.getElementById('product-grid');
-        grid.innerHTML = ''; // 清空内容
-
-        mockProducts.forEach(prod => {
-            const card = document.createElement('div');
-            card.className = "bg-white border rounded-xl overflow-hidden shadow-sm hover:shadow-md transition flex flex-col";
-            card.innerHTML = `
-                <img src="${prod.image}" alt="${prod.title}" class="w-full h-48 object-cover bg-gray-100">
-                <div class="p-6 flex-grow flex flex-col justify-between">
-                    <div>
-                        <h3 class="text-xl font-bold text-gray-900 mb-2">${prod.title}</h3>
-                        <p class="text-gray-600 text-sm mb-4">${prod.description}</p >
-                    </div>
-                    <a href="mailto:info@titansportgear.com?subject=Inquiry about ${prod.title}" class="block text-center bg-gray-900 hover:bg-red-600 text-white font-semibold py-2 rounded transition">Inquire Now</a >
-                </div>
-            `;
-            grid.appendChild(card);
-        });
-    </script>
-</body>
-</html>
+          // 3. 循环遍历数据列表，动态构建 HTML 并渲染
+          data.product_list.forEach(product => {
+            
+            // 路径修复：后台上传图片至 public/images，前台通过服务器直连需要将路径转换为根路径 /images/
+            let finalImageUrl = product.image;
+            if (finalImageUrl && finalImageUrl.startsWith('public/')) {
+              finalImageUrl = finalImageUrl.replace('public/', '/
