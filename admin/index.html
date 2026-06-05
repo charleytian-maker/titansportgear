@@ -4,8 +4,23 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Content Manager | Admin</title>
-    <!-- 引入 Decap CMS 核心脚本 -->
     <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
   </head>
-  <body></body>
+  <body>
+    <script>
+      // 3. 自动初始化握手：如果发现未登录，自动弹出登录框
+      document.addEventListener('DOMContentLoaded', () => {
+        if (window.netlifyIdentity) {
+          window.netlifyIdentity.on("init", user => {
+            if (!user) {
+              window.netlifyIdentity.on("login", () => {
+                document.location.href = "/admin/";
+              });
+            }
+          });
+        }
+      });
+    </script>
+  </body>
 </html>
