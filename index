@@ -1,0 +1,38 @@
+backend:
+  name: git-gateway
+  branch: main
+
+# 媒体文件（产品图片）存放路径
+media_folder: "images/uploads"
+public_folder: "/images/uploads"
+
+collections:
+  - name: "company_info"
+    label: "🏢 公司信息管理 (Company Info)"
+    delete: false
+    editor:
+      preview: false
+    files:
+      - file: "data/company.json"
+        label: "首页及关于我们"
+        name: "about_page"
+        fields:
+          - { label: "公司名称", name: "company_name", widget: "string" }
+          - { label: "首页大标题 (Hero Title)", name: "hero_title", widget: "string" }
+          - { label: "首页副标题 (Hero Subtitle)", name: "hero_subtitle", widget: "string" }
+          - { label: "公司简介 (About Us)", name: "about_text", widget: "text" }
+          - { label: "联系邮箱 (Email)", name: "contact_email", widget: "string" }
+
+  - name: "products"
+    label: "📦 产品中心 (Products)"
+    folder: "data/products"
+    extension: "json"
+    create: true
+    slug: "{{slug}}"
+    editor:
+      preview: false
+    fields:
+      - { label: "产品唯一ID (小写英文/数字)", name: "id", widget: "string" }
+      - { label: "产品名称 (Title)", name: "title", widget: "string" }
+      - { label: "产品主图 (Image)", name: "image", widget: "image" }
+      - { label: "产品简介 (Description)", name: "description", widget: "text" }
