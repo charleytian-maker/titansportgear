@@ -36,3 +36,57 @@ collections:
       - { label: "产品名称 (Title)", name: "title", widget: "string" }
       - { label: "产品主图 (Image)", name: "image", widget: "image" }
       - { label: "产品简介 (Description)", name: "description", widget: "text" }
+
+# 1. 📰 行业博客与新闻板块 (Blogs & News)
+  # 作用：建立行业专业形象，通过 SEO（关键词优化）从 Google 引流免费的买家流量。
+  - name: "blog"
+    label: "📰 博客与新闻 (Blogs & News)"
+    folder: "content/blog" # 对应 Hugo/Astro 项目中的存放路径，可根据实际调整
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - { label: "文章标题 (Title)", name: "title", widget: "string" }
+      - { label: "发布日期 (Date)", name: "date", widget: "datetime" }
+      - { label: "SEO 简述 (Description)", name: "description", widget: "text", hint: "展示在 Google 搜索结果和列表页的摘要" }
+      - { label: "封面图片 (Featured Image)", name: "featured_image", widget: "image" }
+      - { label: "标签分类 (Tags)", name: "tags", widget: "list", default: ["Industry News"] }
+      - { label: "正文内容 (Content)", name: "body", widget: "markdown" }
+
+  # 2. 👥 真实客户评价与背书 (Testimonials)
+  # 作用：B2B 采购金额大，海外买家极其看重社交信任。展示欧美知名客户的评价能极大提升转化率。
+  - name: "testimonials"
+    label: "👥 客户评价 (Testimonials)"
+    folder: "content/testimonials"
+    create: true
+    fields:
+      - { label: "客户姓名/职位 (Name/Title)", name: "title", widget: "string", hint: "例如: John Doe (Purchase Manager)" }
+      - { label: "公司名称/国家 (Company/Country)", name: "company", widget: "string", hint: "例如: Apex Sports, USA" }
+      - { label: "客户头像 (Avatar)", name: "avatar", widget: "image", required: false }
+      - { label: "星级评价 (Rating)", name: "rating", widget: "select", options: ["5 Stars", "4 Stars"], default: "5 Stars" }
+      - { label: "评价内容 (Feedback)", name: "body", widget: "text" }
+
+  # 3. ❓ 常见问题答疑 (FAQ)
+  # 作用：提前解答买家关于“最小起订量 (MOQ)”、“交期 (Lead Time)”、“付款方式”、“定制样品 (OEM/ODM)”的疑问，减少沟通成本。
+  - name: "faq"
+    label: "❓ 常见问题 (FAQ)"
+    file: "content/faq.md" # 采用单文件管理模式，所有的问答都保存在一个文件里，方便前台单页渲染
+    fields:
+      - label: "FAQ 列表管理"
+        name: "faq_list"
+        widget: "list"
+        fields:
+          - { label: "分类", name: "category", widget: "select", options: ["Product", "Order & Payment", "Shipping & Logistics", "Customization"] }
+          - { label: "英文问题 (Question)", name: "question", widget: "string" }
+          - { label: "英文回答 (Answer)", name: "answer", widget: "text" }
+
+  # 4. 🏅 资质证书与工厂实力展示 (Certificates & Strength)
+  # 作用：向大买家证明你们不是小贸易商，而是有合规资质、有工厂规模、能稳定供货的优质源头工厂（如 CE认证、ISO、工厂流水线图）。
+  - name: "certificates"
+    label: "🏅 资质证书与实力 (Certificates & Factory)"
+    folder: "content/certificates"
+    create: true
+    fields:
+      - { label: "证书或车间名称", name: "title", widget: "string", hint: "例如: CE Certificate 或 Production Line 1" }
+      - { label: "分类 (Category)", name: "type", widget: "select", options: ["Certificate", "Factory Tour"] }
+      - { label: "展示图片 (Image)", name: "image", widget: "image" }
+      - { label: "简要说明 (Description)", name: "description", widget: "string", required: false }
