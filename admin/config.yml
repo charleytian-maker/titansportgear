@@ -5,7 +5,7 @@
 
 backend:
   name: github
-  repo: charleytian-mark/Tiansportgear
+  repo: charleytian-maker/Titansportgear
   branch: main  # 主分支是 master 的话改成 master
 
 media_folder: "public/images"
