@@ -7,7 +7,7 @@ description: |-
   Size available: 7,6,5,3,2,1
 products:
   - name: rubber basketball
-    image: /images/screenshot_2026-06-05_201646_349.png
+    image: /images/RBB-001.jpg
     desc: ''
     spec: ''
     inquiry_url: ''
