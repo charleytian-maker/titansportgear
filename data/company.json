@@ -5,3 +5,18 @@
   "about_text": "Welcome to Titan Sport Gear. We specialize in engineering elite sports goods and innovative fishing lures designed to withstand the toughest outdoor environments.",
   "contact_email": "charleytian@gmail.com"
 }
+{
+  "brand_name": "Titan Sport Gear",
+  "hero_title": "Premium Sports Gear & Fishing Equipment",
+  "hero_subtitle": "Trusted B2B Manufacturer & Exporter from China",
+  "hero_image": "/images/你上传的背景图.jpg",
+  "cta_text": "View Our Products",
+  "cta_link": "/products.html",
+  "about_text": "Titan Sport Gear is a leading manufacturer...",
+  "email": "your@email.com",
+  "advantages": [
+    {"icon": "🏭", "title": "Factory Direct", "desc": "Cut out the middleman"},
+    {"icon": "🌍", "title": "Global Export", "desc": "Shipping worldwide"},
+    {"icon": "✅", "title": "Quality Certified", "desc": "ISO & CE certified"}
+  ]
+}
