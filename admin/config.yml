@@ -1,97 +1,189 @@
+# =============================================
+# 南京都梁商贸有限公司 · Decap CMS 配置文件
+# 三语站 EN / DE / JA
+# =============================================
+
 backend:
   name: git-gateway
-  branch: main
+  branch: main  # 主分支是 master 的话改成 master
 
-# 根据你项目是 Astro 还是 Hugo，图片目录通常会自动映射到对应的公共文件夹
-media_folder: "public/images"
-public_folder: "/images"
+media_folder: "images/uploads"
+public_folder: "/images/uploads"
+locale: zh_Hans
 
-# ----------------------------------------------------------------
-# 管理项配置 (Collections)
-# ----------------------------------------------------------------
 collections:
 
-  # 1. 🏢 公司信息管理 (Company Info) - 单文件模式
-  - name: "company_info"
-    label: "🏢 公司信息管理 (Company Info)"
-    delete: false
-    editor:
-      preview: false
+  # 1. 首页 Hero（三语）
+  - name: "homepage"
+    label: "首页内容"
     files:
-      - name: "about_page"
-        label: "首页及关于我们"
-        file: "content/company_info/about.md"
+      - name: "hero_en"
+        label: "首页 · 英文版"
+        file: "data/homepage/hero_en.json"
         fields:
-          - { label: "公司名称 (Company Name)", name: "title", widget: "string" }
-          - { label: "公司英文简介 (About Us Summary)", name: "description", widget: "text" }
-          - { label: "联系邮箱 (Email)", name: "email", widget: "string" }
-          - { label: "联系电话 (Phone)", name: "phone", widget: "string", required: false }
-          - { label: "公司地址 (Address)", name: "address", widget: "string", required: false }
+          - { label: "大标题", name: "title", widget: "string" }
+          - { label: "副标题", name: "subtitle", widget: "string" }
+          - { label: "按钮文字", name: "cta_text", widget: "string" }
+          - { label: "按钮链接", name: "cta_link", widget: "string" }
+          - { label: "背景图片", name: "hero_image", widget: "image" }
 
-  # 2. 📦 产品中心 (Products) - 统一单文件列表模式
+      - name: "hero_de"
+        label: "首页 · 德文版"
+        file: "data/homepage/hero_de.json"
+        fields:
+          - { label: "大标题", name: "title", widget: "string" }
+          - { label: "副标题", name: "subtitle", widget: "string" }
+          - { label: "按钮文字", name: "cta_text", widget: "string" }
+          - { label: "按钮链接", name: "cta_link", widget: "string" }
+          - { label: "背景图片", name: "hero_image", widget: "image" }
+
+      - name: "hero_ja"
+        label: "首页 · 日文版"
+        file: "data/homepage/hero_ja.json"
+        fields:
+          - { label: "大标题", name: "title", widget: "string" }
+          - { label: "副标题", name: "subtitle", widget: "string" }
+          - { label: "按钮文字", name: "cta_text", widget: "string" }
+          - { label: "按钮链接", name: "cta_link", widget: "string" }
+          - { label: "背景图片", name: "hero_image", widget: "image" }
+
+  # 2. 产品中心（10品类 × 3语言，每类15张图）
   - name: "products"
-    label: "📦 产品中心 (Products)"
-    file: "data/products.json" # 强制所有产品写入这一个文件
-    allow_add: true
+    label: "产品中心"
+    folder: "data/products"
+    create: true
+    slug: "{{category}}_{{lang}}"
     fields:
-      - label: "Product List"
-        name: "products_array"
+      - label: "品类"
+        name: "category"
+        widget: "select"
+        options:
+          - { label: "篮球", value: "basketball" }
+          - { label: "足球", value: "football" }
+          - { label: "排球", value: "volleyball" }
+          - { label: "操场球", value: "playground_ball" }
+          - { label: "橄榄球", value: "american_football" }
+          - { label: "手球", value: "handball" }
+          - { label: "棒垒球", value: "baseball" }
+          - { label: "网球", value: "tennis" }
+          - { label: "羽毛球", value: "badminton" }
+          - { label: "沙滩球拍", value: "beach_paddle" }
+
+      - label: "语言"
+        name: "lang"
+        widget: "select"
+        options:
+          - { label: "英文 EN", value: "en" }
+          - { label: "德文 DE", value: "de" }
+          - { label: "日文 JA", value: "ja" }
+
+      - { label: "品类页面标题", name: "page_title", widget: "string" }
+      - { label: "品类描述", name: "description", widget: "text" }
+
+      - label: "产品列表（最多15个）"
+        name: "products"
         widget: "list"
-        summary: "{{fields.title}}"
+        max: 15
         fields:
-          - { label: "产品名称 (Product Name)", name: "title", widget: "string" }
-          - { label: "SKU 编码", name: "sku", widget: "string" }
-          - { label: "产品图片 (Product Image)", name: "image", widget: "image" }
-          - { label: "规格参数 (Specifications)", name: "specifications", widget: "string" }
-          - { label: "产品简短描述 (Description)", name: "description", widget: "text" }
-          
-  # 3. 📰 博客与新闻 (Blogs & News) - 🆕 文件夹模式
-  - name: "blog"
-    label: "📰 博客与新闻 (Blogs & News)"
-    folder: "content/blog"
-    create: true
-    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
-    fields:
-      - { label: "文章标题 (Title)", name: "title", widget: "string" }
-      - { label: "发布日期 (Date)", name: "date", widget: "datetime" }
-      - { label: "SEO 简述 (Description)", name: "description", widget: "text", hint: "展示在 Google 搜索结果和列表页的摘要" }
-      - { label: "封面图片 (Featured Image)", name: "featured_image", widget: "image" }
-      - { label: "标签分类 (Tags)", name: "tags", widget: "list", default: ["Industry News"] }
-      - { label: "正文内容 (Content)", name: "body", widget: "markdown" }
+          - { label: "产品名称", name: "name", widget: "string" }
+          - { label: "产品图片", name: "image", widget: "image" }
+          - { label: "产品描述", name: "desc", widget: "text", required: false }
+          - { label: "规格/型号", name: "spec", widget: "string", required: false }
+          - { label: "询价链接", name: "inquiry_url", widget: "string", required: false }
 
-  # 4. 👥 客户评价 (Testimonials) - 🆕 文件夹模式
-  - name: "testimonials"
-    label: "👥 客户评价 (Testimonials)"
-    folder: "content/testimonials"
-    create: true
-    slug: "{{slug}}"
-    fields:
-      - { label: "客户姓名/职位 (Name/Title)", name: "title", widget: "string", hint: "例如: John Doe (Purchase Manager)" }
-      - { label: "公司名称/国家 (Company/Country)", name: "company", widget: "string", hint: "例如: Apex Sports, USA" }
-      - { label: "客户头像 (Avatar)", name: "avatar", widget: "image", required: false }
-      - { label: "星级评价 (Rating)", name: "rating", widget: "select", options: ["5 Stars", "4 Stars"], default: "5 Stars" }
-      - { label: "评价内容 (Feedback)", name: "body", widget: "text" }
+  # 3. 关于我们（三语）
+  - name: "about"
+    label: "关于我们"
+    files:
+      - name: "about_en"
+        label: "关于我们 · 英文"
+        file: "data/about/about_en.json"
+        fields:
+          - { label: "页面标题", name: "title", widget: "string" }
+          - { label: "公司简介", name: "intro", widget: "markdown" }
+          - { label: "公司图片", name: "image", widget: "image", required: false }
+          - label: "核心优势"
+            name: "advantages"
+            widget: "list"
+            fields:
+              - { label: "标题", name: "title", widget: "string" }
+              - { label: "描述", name: "desc", widget: "string" }
 
-  # 5. ❓ 常见问题 (FAQ) - 🆕 文件夹模式（规避之前的 files 报错）
-  - name: "faq"
-    label: "❓ 常见问题 (FAQ)"
-    folder: "content/faq"
-    create: true
-    slug: "{{slug}}"
-    fields:
-      - { label: "问题卡片标题 (如 MOQ FAQ)", name: "title", widget: "string" }
-      - { label: "分类", name: "category", widget: "select", options: ["Product", "Order & Payment", "Shipping", "Customization"] }
-      - { label: "英文问题 (Question)", name: "question", widget: "string" }
-      - { label: "英文回答 (Answer)", name: "answer", widget: "text" }
+      - name: "about_de"
+        label: "关于我们 · 德文"
+        file: "data/about/about_de.json"
+        fields:
+          - { label: "页面标题", name: "title", widget: "string" }
+          - { label: "公司简介", name: "intro", widget: "markdown" }
+          - { label: "公司图片", name: "image", widget: "image", required: false }
+          - label: "核心优势"
+            name: "advantages"
+            widget: "list"
+            fields:
+              - { label: "标题", name: "title", widget: "string" }
+              - { label: "描述", name: "desc", widget: "string" }
 
-  # 6. 🏅 资质证书与实力 (Certificates & Factory) - 🆕 文件夹模式
+      - name: "about_ja"
+        label: "关于我们 · 日文"
+        file: "data/about/about_ja.json"
+        fields:
+          - { label: "页面标题", name: "title", widget: "string" }
+          - { label: "公司简介", name: "intro", widget: "markdown" }
+          - { label: "公司图片", name: "image", widget: "image", required: false }
+          - label: "核心优势"
+            name: "advantages"
+            widget: "list"
+            fields:
+              - { label: "标题", name: "title", widget: "string" }
+              - { label: "描述", name: "desc", widget: "string" }
+
+  # 4. 车间展示
+  - name: "factory"
+    label: "车间展示"
+    files:
+      - name: "factory_gallery"
+        label: "车间图片库"
+        file: "data/factory/gallery.json"
+        fields:
+          - label: "车间图片"
+            name: "images"
+            widget: "list"
+            fields:
+              - { label: "图片", name: "src", widget: "image" }
+              - { label: "说明（EN）", name: "caption_en", widget: "string", required: false }
+              - { label: "说明（DE）", name: "caption_de", widget: "string", required: false }
+              - { label: "说明（JA）", name: "caption_ja", widget: "string", required: false }
+
+  # 5. 证书
   - name: "certificates"
-    label: "🏅 资质证书与实力 (Certificates & Factory)"
-    folder: "content/certificates"
-    create: true
-    slug: "{{slug}}"
-    fields:
-      - { label: "证书或车间名称", name: "title", widget: "string", hint: "例如: CE Certificate 或 Production Line" }
-      - { label: "分类 (Category)", name: "type", widget: "select", options: ["Certificate", "Factory Tour"] }
-      - { label: "展示图片 (Image)", name: "image", widget: "image" }
-      - { label: "简要说明 (Description)", name: "description", widget: "string", required: false }
+    label: "证书"
+    files:
+      - name: "cert_list"
+        label: "证书列表"
+        file: "data/certificates/list.json"
+        fields:
+          - label: "证书列表"
+            name: "certs"
+            widget: "list"
+            fields:
+              - { label: "证书名称（EN）", name: "name_en", widget: "string" }
+              - { label: "证书名称（DE）", name: "name_de", widget: "string", required: false }
+              - { label: "证书名称（JA）", name: "name_ja", widget: "string", required: false }
+              - { label: "证书图片", name: "image", widget: "image" }
+
+  # 6. 联系我们
+  - name: "contact"
+    label: "联系我们"
+    files:
+      - name: "contact_info"
+        label: "联系信息"
+        file: "data/contact/info.json"
+        fields:
+          - { label: "WhatsApp 号码", name: "whatsapp", widget: "string" }
+          - { label: "邮箱", name: "email", widget: "string" }
+          - { label: "公司地址（EN）", name: "address_en", widget: "string" }
+          - { label: "公司地址（DE）", name: "address_de", widget: "string", required: false }
+          - { label: "公司地址（JA）", name: "address_ja", widget: "string", required: false }
+          - { label: "询价表单标题（EN）", name: "form_title_en", widget: "string" }
+          - { label: "询价表单标题（DE）", name: "form_title_de", widget: "string", required: false }
+          - { label: "询价表单标题（JA）", name: "form_title_ja", widget: "string", required: false }
